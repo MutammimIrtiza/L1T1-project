@@ -189,26 +189,44 @@ void checkCollision(){
 	// checks collision as well as landing
 	int i;
 	for(i = 0; i < RecObsNo; i++){
-		if(dy < 0 ){ // playerstate == jump is redundant
-			if(playerX + 60 >= rec_obs[i].x && playerX <= rec_obs[i].x + 60 && playerY <= rec_obs[i].y+60
-				) {
-				playerstate = on_block; 
-				printf("onblock");
-			}
-		}
+		// if(dy < 0 ){ // playerstate == jump is redundant
+		// 	if(playerX + playerW >= rec_obs[i].x && playerX <= rec_obs[i].x + rec_obs[i].w && playerY <= rec_obs[i].y+rec_obs[i].h) {
+		// 		playerstate = on_block; 
+		// 		printf("onblock");
+		// 	}
+		// }
 
-		else if(playerstate == ground && playerX + 60 >= rec_obs[i].x && playerX <= rec_obs[i].x &&
-			playerY == rec_obs[i].y) {
-			gamestate = game_over;
-			printf("crashed");
-		}
+		// else if(playerstate == ground && playerX + playerW >= rec_obs[i].x && playerX <= rec_obs[i].x &&
+		// 	playerY == rec_obs[i].y) {
+		// 	gamestate = game_over;
+		// 	printf("crashed");
+		// }
 
-		else if(playerstate == ground && playerX + 60 >= rec_obs[i].x && playerX <= rec_obs[i].x && playerY <= rec_obs[i].y + 60 && playerY > rec_obs[i].y ) {
-			gamestate = game_over;
-			printf("crashed");
-		}
+		// else if(playerstate == ground && playerX + playerW >= rec_obs[i].x && playerX <= rec_obs[i].x && playerY <= rec_obs[i].y + rec_obs[i].h && playerY > rec_obs[i].y ) {
+		// 	gamestate = game_over;
+		// 	printf("crashed");
+		// }
 
 		// collision with floating blocks left
+
+		// overlapping widths
+		if(playerX < rec_obs[i].x + rec_obs[i].w 
+			&& playerX + playerW > rec_obs[i].x){
+
+				// landing
+				if(dy < 0 && playerY <= rec_obs[i].y + rec_obs[i].h){
+					playerstate = on_block;
+					dy = 60;
+				}
+
+				else if(playerY < rec_obs[i].y + rec_obs[i].h 
+						&& playerY + playerH > rec_obs[i].y){
+						gamestate = game_over;
+				}
+
+				
+		}
+
 
 		
 
