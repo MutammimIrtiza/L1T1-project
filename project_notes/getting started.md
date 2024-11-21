@@ -32,6 +32,9 @@ pause menu
 return to main menu
 
 
+ 
+- ### delay in continuous jump from ground, but no delay in continuous jump from obstacle
+
 
 
 	

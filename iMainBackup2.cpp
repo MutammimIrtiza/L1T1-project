@@ -172,7 +172,7 @@ void updatePlayerPos(){
 		playerY += dy;
 		dy -= 10;
 				
-		if(playerY < 210){
+		if(playerY < 200){
 			dy = 60;
 			playerY = 200;
 			playerstate = ground;
