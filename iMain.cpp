@@ -22,9 +22,9 @@ int gamespeed = 25;
 typedef struct{
 	int x;
 	int y;
-	int ti;
 	int w;
 	int h;
+	int ti;
 }RecObstacles;
 
 
@@ -32,10 +32,9 @@ int recLP = 0;
 int recRP = 0;
 RecObstacles rec_obs[] = {
     {1850,800,0,0,0},
-	{1850,200,60,120,60},
-	{1850,200,70,120,120},
-	{1850,800,100000000,0,0}
-	
+	{1850,200,120,60,30},
+	{1850,200,120,120,50},
+	{1850,800,0,0,100000000}
 	
 };
 
@@ -53,12 +52,14 @@ int triRP = 0;
 TriObs tri_obs[] = {
 	{{1850, 1850, 1850},{800, 800, 800},0},
 	{{1850, 1880,1910},{200,254,200},5},
-
-	{{1850, 1850, 1850},{800, 800, 800},1000000000},
-	
+	{{1850, 1850, 1850},{800, 800, 800},1000000000}
 
 };
 
+
+void updateGround();
+void drawGround();
+void updatePlayerPos();
 
 void updateRecObstacle();
 void drawRecObstacle();
@@ -68,9 +69,6 @@ void updateTriObstacle();
 void drawTriObs();
 void checkTriCollision();
 
-void updateGround();
-void drawGround();
-void updatePlayerPos();
 void updateTimers();
 void removeObs();
 
@@ -80,14 +78,23 @@ void iDraw() {
 
 	iClear();
 	switch(gamestate){
-		case play:  drawGround();
-					drawRecObstacle();
-					drawTriObs();
-					iSetColor(252, 231, 3);	
-					iFilledRectangle(playerX, playerY, 60, 60);
 
+		case play:  
+			drawGround();
+			drawRecObstacle();
+			drawTriObs();
+			iSetColor(252, 231, 3);	
+			iFilledRectangle(playerX, playerY, 60, 60);
+			break;
 
-					
+		case pause:
+			drawGround();
+			drawRecObstacle();
+			drawTriObs();
+			iSetColor(252, 231, 3);	
+			iFilledRectangle(playerX, playerY, 60, 60);
+			break;
+							
 	}
 }
 
@@ -151,6 +158,7 @@ void iSpecialKeyboard(unsigned char key) {
 
 
 int main() {
+
 	//place your own initialization codes here.
 	iSetTimer(35, updatePlayerPos);
 	iSetTimer(35, updateGround);
@@ -166,7 +174,7 @@ int main() {
 
 
 void updatePlayerPos(){
-	printf("%d %d %d %d\n", recLP, recRP, triLP, triRP);
+	Time += 1;
 
 	switch(playerstate){
 
@@ -192,27 +200,11 @@ void updatePlayerPos(){
 	}
 
 
-		Time += 1;
+		
 }
 
 
-void updateRecObstacle(){
-	
-	// update left pointer
-	if(rec_obs[recLP].x < 0) recLP++;
 
-	// update right pointer
-	if(rec_obs[recRP+1].ti <= Time) recRP++;
-
-	// update obstacles within left and right pointers 
-	int i;
-	for(i = recLP; i <= recRP; i++){
-		rec_obs[i].x -= gamespeed;
-	}
-
-	
-
-}
 
 
 void drawRecObstacle(){
@@ -225,20 +217,40 @@ void drawRecObstacle(){
 
 }
 
+void updateRecObstacle(){
+	
+	// update left pointer
+	if(rec_obs[recLP].x < 0) {
+		recLP++;		
+	}
 
+	// update right pointer
+	if(rec_obs[recRP+1].ti <= Time) {		
+		recRP++;
+	}
+
+	// update obstacles within left and right pointers 
+	int i;
+	for(i = recLP; i <= recRP; i++){
+		rec_obs[i].x -= gamespeed;
+	}
+
+}
 
 
 void checkRecCollision(){
 
 	// checks collision as well as landing
 	int i;
-	for(i = recLP; i < recRP; i++){
+	for(i = recLP; i <= recRP; i++){
 
 		// collision with floating blocks left
 
 		// overlapping widths
 		if(playerX < rec_obs[i].x + rec_obs[i].w 
 			&& playerX + playerW > rec_obs[i].x){
+				printf("%d\n",playerY);
+				printf("%d %d\n",playerY < rec_obs[i].y + rec_obs[i].h ,playerY + playerH > rec_obs[i].y);
 
 				// landing
 				if(dy < 0 && playerY <= rec_obs[i].y + rec_obs[i].h &&
@@ -288,15 +300,13 @@ void updateTriObstacle(){
 
 void checkTriCollision(){
 	int i; 
-	for(i = triLP; i < triRP; i++){
-		printf("%d %d %d \n",i, tri_obs[i].y[0], playerY);
+	for(i = triLP; i <= triRP; i++){
 		if(playerX < tri_obs[i].x[2] &&
 			playerX + playerW > tri_obs[i].x[0] &&
 			playerY < tri_obs[i].y[1] && 
             tri_obs[i].y[0] <= playerY){
 
-				// printf("condition 1 : %d\n", playerX < tri_obs[i].x[2]);
-				// printf("condition 2 : %d\n", playerX + playerW > tri_obs[i].x[0]);
+				
 				gamestate = game_over;
 			}
 	}
@@ -315,18 +325,24 @@ void updateTimers(){
 				iPauseTimer(1);
 				iPauseTimer(2);
 				iPauseTimer(3);
+				iPauseTimer(4);
+				iPauseTimer(5);
 				break;
 	case play:
 				iResumeTimer(0);
 				iResumeTimer(1);
 				iResumeTimer(2);
 				iResumeTimer(3);
+				iResumeTimer(4);
+				iResumeTimer(5);
 				break;
 	case game_over:
 				iPauseTimer(0);
 				iPauseTimer(1);
 				iPauseTimer(2);
 				iPauseTimer(3);
+				iPauseTimer(4);
+				iPauseTimer(5);
 				break;
 	
 	}

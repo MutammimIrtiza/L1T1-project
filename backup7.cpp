@@ -13,17 +13,18 @@ PlayerState playerstate = ground;
 GameState gamestate = pause;
 
 int dy = 60;
-int dyfall = 10;
+int default_dy = 60;
+int dyfall = -10;
 int gnd_1st_x = 10; int gnd_1st_width = 220;
 int gnd_2nd_x = 230;
-int gamespeed = 30;
+int gamespeed = 25;
 
 typedef struct{
 	int x;
 	int y;
-	int ti;
 	int w;
 	int h;
+	int ti;
 }RecObstacles;
 
 
@@ -31,14 +32,9 @@ int recLP = 0;
 int recRP = 0;
 RecObstacles rec_obs[] = {
     {1850,800,0,0,0},
-	{1850,200,8,60,60},
-	//{1850,200,30,120,120}, // gamespeed = 30. obs width = 60. so, 2 unit time gap taken
-	{1850,200,30,120,60},
-	{1850,200,34,120,120},
-	{1850,200,70,400,60},
-	{1850,200,90,60,200},
-	{1850,260,50,400,60},
-	{1850,800,100000000,0,0}
+	{1850,200,120,60,30},
+	{1850,200,120,120,50},
+	{1850,800,0,0,100000000}
 	
 };
 
@@ -50,17 +46,20 @@ typedef struct{
 
 }TriObs;
 
+
 int triLP = 0;
 int triRP = 0;
 TriObs tri_obs[] = {
 	{{1850, 1850, 1850},{800, 800, 800},0},
 	{{1850, 1880,1910},{200,254,200},5},
-	//{{1850, 1850, 1850},{800, 800, 800},100000000}
-	
-	
+	{{1850, 1850, 1850},{800, 800, 800},1000000000}
 
 };
 
+
+void updateGround();
+void drawGround();
+void updatePlayerPos();
 
 void updateRecObstacle();
 void drawRecObstacle();
@@ -70,9 +69,6 @@ void updateTriObstacle();
 void drawTriObs();
 void checkTriCollision();
 
-void updateGround();
-void drawGround();
-void updatePlayerPos();
 void updateTimers();
 void removeObs();
 
@@ -82,14 +78,23 @@ void iDraw() {
 
 	iClear();
 	switch(gamestate){
-		case play:  drawGround();
-					drawRecObstacle();
-					drawTriObs();
-					iSetColor(252, 231, 3);	
-					iFilledRectangle(playerX, playerY, 60, 60);
 
+		case play:  
+			iSetColor(252, 231, 3);	
+			iFilledRectangle(playerX, playerY, 60, 60);
+			drawGround();
+			drawRecObstacle();
+			drawTriObs();
+			break;
 
-					
+		case pause:
+			iSetColor(252, 231, 3);	
+			iFilledRectangle(playerX, playerY, 60, 60);
+			drawGround();
+			drawRecObstacle();
+			drawTriObs();
+			break;
+							
 	}
 }
 
@@ -153,14 +158,15 @@ void iSpecialKeyboard(unsigned char key) {
 
 
 int main() {
+	//printf("%d\n", playerY);
 	//place your own initialization codes here.
-	iSetTimer(50, updatePlayerPos);
-	iSetTimer(50, updateGround);
-	iSetTimer(50, updateRecObstacle);
-	iSetTimer(50, updateTriObstacle);
-	iSetTimer(25, checkRecCollision);
-	iSetTimer(25, checkTriCollision);
-	iSetTimer(25, updateTimers);
+	iSetTimer(35, updatePlayerPos);
+	iSetTimer(35, updateGround);
+	iSetTimer(35, updateRecObstacle);
+	iSetTimer(35, updateTriObstacle);
+	iSetTimer(35, checkRecCollision);
+	iSetTimer(35, checkTriCollision);
+	iSetTimer(35, updateTimers);
 	
 	iInitialize(1850, 950, "Geometry Dash");
 	return 0;
@@ -168,22 +174,26 @@ int main() {
 
 
 void updatePlayerPos(){
+	Time += 1;
+	//printf("%d %d %d %d\n", recLP, recRP, triLP, triRP);
+	//printf("%d\n", playerY);
+
 	switch(playerstate){
 
 	case jump:
 		playerY += dy;
 		dy -= 10;
 				
-		if(playerY < 200){
-			dy = 60;
+		if(playerY < 210){
+			dy = default_dy;
 			playerY = 200;
 			playerstate = ground;
 		}
 		break;
 
 	case on_block:
-		if(playerX > rec_obs[onblockNo].x + rec_obs[onblockNo].w){
-			dy = -10;
+		if(playerX > rec_obs[onblockNo].x + rec_obs[onblockNo].w){  // > or >=  ???
+			dy = dyfall;
 			playerstate = jump;
 
 		}
@@ -192,29 +202,11 @@ void updatePlayerPos(){
 	}
 
 
-	// if(state == fall){
-
-	// }
+		
 }
 
 
-void updateRecObstacle(){
 
-	// update left pointer
-	if(rec_obs[recLP].x < 0) recLP++;
-
-	// update right pointer
-	if(rec_obs[recRP+1].ti <= Time) recRP++;
-
-	// update obstacles within left and right pointers 
-	int i;
-	for(i = recLP; i <= recRP; i++){
-		rec_obs[i].x -= gamespeed;
-	}
-
-	Time += 1;
-
-}
 
 
 void drawRecObstacle(){
@@ -227,44 +219,44 @@ void drawRecObstacle(){
 
 }
 
-void updateTriObstacle(){
+void updateRecObstacle(){
+	
 	// update left pointer
-	if(tri_obs[triLP].x[0] < 0) triLP++;
+	if(rec_obs[recLP].x < 0) {
+		//printf("removed rec %d \n",recLP);
+		recLP++;
+		
+	}
 
 	// update right pointer
-	if(tri_obs[triRP+1].ti <= Time) triRP++;
+	if(rec_obs[recRP+1].ti <= Time) {
+		
+		recRP++;
+		//printf("added rec %d \n",recRP);
+	}
 
 	// update obstacles within left and right pointers 
-	int i, j;
-	for(i = triLP; i <= triRP; i++){
-		for(j = 0; j <3; j++){
-			tri_obs[i].x[j] -= gamespeed;
-		}
-	}
-}
-
-void drawTriObs(){
 	int i;
-	iSetColor(252, 3, 65);
-	for(i = triLP; i <= triRP; i++){
-		iFilledPolygon(tri_obs[i].x, tri_obs[i].y, 3);
+	for(i = recLP; i <= recRP; i++){
+		rec_obs[i].x -= gamespeed;
 	}
+
 }
 
 
 void checkRecCollision(){
-	// there is some glitch. i managed to collide with first 3 obstacles on a run, yet game was on
-	// also, if i keep up pressed, the ground obstacles are not detected
 
 	// checks collision as well as landing
 	int i;
-	for(i = recLP; i < recRP; i++){
+	for(i = recLP; i <= recRP; i++){
 
 		// collision with floating blocks left
 
 		// overlapping widths
 		if(playerX < rec_obs[i].x + rec_obs[i].w 
 			&& playerX + playerW > rec_obs[i].x){
+				printf("%d\n",playerY);
+				printf("%d %d\n",playerY < rec_obs[i].y + rec_obs[i].h ,playerY + playerH > rec_obs[i].y);
 
 				// landing
 				if(dy < 0 && playerY <= rec_obs[i].y + rec_obs[i].h &&
@@ -273,7 +265,7 @@ void checkRecCollision(){
 					playerstate = on_block;
 					onblockNo = i;
 					playerY = rec_obs[i].y + rec_obs[i].h;
-					dy = 60;
+					dy = default_dy;
 				}
 
 				else if(playerY < rec_obs[i].y + rec_obs[i].h 
@@ -286,10 +278,38 @@ void checkRecCollision(){
 	}
 }
 
+void drawTriObs(){
+	int i;
+	iSetColor(252, 3, 65);
+	for(i = triLP; i <= triRP; i++){
+		//printf("%d %d %d \n",i, tri_obs[i].y[0], playerY);
+		iFilledPolygon(tri_obs[i].x, tri_obs[i].y, 3);
+	}
+}
+
+
+void updateTriObstacle(){
+	// update left pointer
+	if(tri_obs[triLP].x[0] < 0) triLP++;
+
+	// update right pointer
+	if(tri_obs[triRP+1].ti <= Time) triRP++;
+
+	// update obstacles within left and right pointers 
+	int i, j;
+	for(i = triLP; i <= triRP; i++){
+		//printf("%d %d %d \n",i, tri_obs[i].y[0], playerY);
+		for(j = 0; j <3; j++){
+			tri_obs[i].x[j] -= gamespeed;
+		}
+	}
+}
+
+
 void checkTriCollision(){
 	int i; 
-	for(i = triLP; i < triRP; i++){
-		printf("%d %d %d \n",i, tri_obs[i].y[0], playerY);
+	for(i = triLP; i <= triRP; i++){
+		//printf("%d %d %d \n",i, tri_obs[i].y[0], playerY);
 		if(playerX < tri_obs[i].x[2] &&
 			playerX + playerW > tri_obs[i].x[0] &&
 			playerY < tri_obs[i].y[1] && 

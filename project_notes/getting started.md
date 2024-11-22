@@ -32,10 +32,9 @@ pause menu
 return to main menu
 
 
- 
-- ### delay in continuous jump from ground, but no delay in continuous jump from obstacle
 
-- # there can be hundreds of < <= > >= combinations, and i don't know which one will work smoothest
+- ### there can be hundreds of < <= > >= combinations, and i don't know which one will work smoothest. 
+- 
 
 	
 	

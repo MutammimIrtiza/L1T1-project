@@ -53,8 +53,7 @@ int triRP = 0;
 TriObs tri_obs[] = {
 	{{1850, 1850, 1850},{800, 800, 800},0},
 	{{1850, 1880,1910},{200,254,200},5},
-
-	{{1850, 1850, 1850},{800, 800, 800},1000000000},
+	{{1850, 1850, 1850},{800, 800, 800},1000000000}
 	
 
 };
@@ -283,8 +282,10 @@ void checkRecCollision(){
 }
 
 void checkTriCollision(){
+	
 	int i; 
 	for(i = triLP; i < triRP; i++){
+		printf("%d %d %d \n",i, tri_obs[i].y[0], playerY);
 		if(playerX < tri_obs[i].x[2] &&
 			playerX + playerW > tri_obs[i].x[0] &&
 			playerY < tri_obs[i].y[1] && 
@@ -310,18 +311,24 @@ void updateTimers(){
 				iPauseTimer(1);
 				iPauseTimer(2);
 				iPauseTimer(3);
+				iPauseTimer(4);
+				iPauseTimer(5);
 				break;
 	case play:
 				iResumeTimer(0);
 				iResumeTimer(1);
 				iResumeTimer(2);
 				iResumeTimer(3);
+				iResumeTimer(4);
+				iResumeTimer(5);
 				break;
 	case game_over:
 				iPauseTimer(0);
 				iPauseTimer(1);
 				iPauseTimer(2);
 				iPauseTimer(3);
+				iPauseTimer(4);
+				iPauseTimer(5);
 				break;
 	
 	}
