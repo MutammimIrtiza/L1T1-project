@@ -22,7 +22,6 @@ typedef struct{
 	int x;
 	int y;
 	int ti;
-	
 	int w;
 	int h;
 }RecObstacles;
@@ -197,14 +196,7 @@ void updatePlayerPos(){
 
 
 void updateRecObstacle(){
-	// int i;
-	// for(int i = 0; i < RecObsNo; i++){
-	// 	if(rec_obs[i].ti <= Time && !rec_obs[i].done){
-	// 		rec_obs[i].x -= gamespeed;
-	// 	}
-	// 	if(rec_obs[i].x < 0) rec_obs[i].done = 1;
-	// }
-	
+
 	// update left pointer
 	if(rec_obs[recLP].x < 0) recLP++;
 
@@ -223,13 +215,7 @@ void updateRecObstacle(){
 
 
 void drawRecObstacle(){
-	
-	iSetColor(252, 3, 65);
-	// for(i = 0; i < RecObsNo; i++){ 
-	// 	if(rec_obs[i].ti <= Time && !rec_obs[i].done) {
-	// 		iFilledRectangle(rec_obs[i].x, rec_obs[i].y, rec_obs[i].w, rec_obs[i].h);
-	// 	}
-	// }
+
 	int i;
 	iSetColor(252, 3, 65);
 	for(i = recLP; i <= recRP; i++){
