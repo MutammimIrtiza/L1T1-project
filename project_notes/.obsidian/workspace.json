@@ -27,12 +27,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "getting started.md",
+                "file": "skipped for now.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "getting started"
+              "title": "skipped for now"
             }
           }
         ],
@@ -179,13 +179,13 @@
   },
   "active": "45268fe17804db71",
   "lastOpenFiles": [
-    "6 important keys.md",
     "getting started.md",
-    "enum.md",
     "given demo files.md",
     "issues.md",
-    "Screenshot 2024-11-21 123846.png",
+    "enum.md",
     "skipped for now.md",
+    "Screenshot 2024-11-21 123846.png",
+    "6 important keys.md",
     "Welcome.md",
     "sprintf.md",
     "Screenshot 2024-11-13 213526.png"
