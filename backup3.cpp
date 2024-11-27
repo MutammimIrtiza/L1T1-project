@@ -6,8 +6,8 @@ enum GameState {main_menu, pause, play, game_over, settings, leaderboards};
 int Time = 0;
 int playerX = 400;
 int playerY = 200;
-int playerW = 60;
-int playerH = 60;
+int playerW = 55;
+int playerH = 55;
 int onblockNo;
 PlayerState playerstate = ground;
 GameState gamestate = pause;
@@ -17,7 +17,7 @@ int default_dy = 55;
 int dyfall = -10;
 int gnd_1st_x = 10; int gnd_1st_width = 220;
 int gnd_2nd_x = 230;
-int gamespeed = 25;
+int gamespeed = 22;
 
 typedef struct{
 	int x;
@@ -34,10 +34,10 @@ RecObstacles rec_obs[] = {
     {1850,800,0,0,0},
 	{1850,200,120,60,29},
 	{1850,200,120,120,45},
-	{1850,200,80,60,80}, //
-	{1850,200,80,120,91}, //
-	{1850,200,80,180,103}, //
-	{1850,200,80,240,117}, //
+	{1850,200,60,60,80}, //
+	{1850,200,60,120,91}, //
+	{1850,200,60,180,103}, //
+	{1850,200,60,240,117}, //
 	{1850,800,0,0,100000000}
 	
 };
@@ -155,28 +155,27 @@ void iKeyboard(unsigned char key) {
 
 // check iMainCopy.cpp if needed
 void iSpecialKeyboard(unsigned char key) {
-
-	if (key == GLUT_KEY_END) {
-		exit(0);
-	}
-	if (key == GLUT_KEY_UP) {
-		if(playerstate == ground || playerstate == on_block){
-			playerstate = jump;
-		}
-		
-	}
-	//place your codes for other keys here
+    if (key == GLUT_KEY_END) {
+        exit(0);
+    }
+    if (key == GLUT_KEY_UP) {
+        if (playerstate == ground || playerstate == on_block) {
+            playerstate = jump;
+            dy = default_dy;  // Ensure dy is reset when jump begins
+        }
+    }
 }
+
 
 
 int main() {
 
 	//place your own initialization codes here.
-	iSetTimer(35, updatePlayerPos);
-	iSetTimer(35, updateGround);
-	iSetTimer(35, updateRecObstacle);
-	iSetTimer(35, updateTriObstacle);
-	iSetTimer(30, checkRecCollision);
+	iSetTimer(32, updatePlayerPos);
+	iSetTimer(32, updateGround);
+	iSetTimer(32, updateRecObstacle);
+	iSetTimer(32, updateTriObstacle);
+	iSetTimer(27, checkRecCollision);
 	iSetTimer(30, checkTriCollision);
 	iSetTimer(30, updateTimers);
 	
@@ -185,36 +184,30 @@ int main() {
 }
 
 
-void updatePlayerPos(){
-	Time += 1;
+void updatePlayerPos() {
+    Time += 1;
 
-	switch(playerstate){
+    switch (playerstate) {
+        case jump:
+            playerY += dy;
+            dy -= 10;
 
-	case jump:
-		playerY += dy;
-		dy -= 10;
-				
-		if(playerY < 201){
-			playerY = 200;
-			playerstate = ground;
-			dy = default_dy;
-			
-		}
-		break;
+            if (playerY < 230) {  // Landing on the ground
+                playerY = 200;
+                playerstate = ground;
+                dy = default_dy;  // Reset only if no immediate jump is detected
+            }
+            break;
 
-	case on_block:
-		if(playerX > rec_obs[onblockNo].x + rec_obs[onblockNo].w){  // > or >=  ???
-			dy = dyfall;
-			playerstate = jump;
-
-		}//else dy = 0;
-
-		break;
-	}
-
-
-		
+        case on_block:
+            if (playerX > rec_obs[onblockNo].x + rec_obs[onblockNo].w) {  // > or >= ???
+                dy = dyfall;
+                playerstate = jump;
+            }
+            break;
+    }
 }
+
 
 
 
